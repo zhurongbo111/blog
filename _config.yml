@@ -103,3 +103,11 @@ theme: fluid
 deploy:
   type: 'git'
   repo: 'https://github.com/zhurongbo111/blog.git'
+
+sitemap:
+  path: 
+    - sitemap.xml
+    - sitemap.txt
+  rel: false
+  tags: false
+  categories: false

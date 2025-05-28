@@ -1,0 +1,5 @@
+User-Agent: *
+Disallow: /tag/
+Disallow: /category/
+Disallow: /archives/
+Sitemap: https://gzblog.dpdns.org/sitemap.xml
