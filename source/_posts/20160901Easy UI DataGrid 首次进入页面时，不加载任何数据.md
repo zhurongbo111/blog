@@ -7,6 +7,7 @@ tags:
  - Javascript
  - Easy UI
 description: 提供了一种Easy UI的DataGrid 组件第一次不加载数据的解决方案
+permalink: /posts/2.html
 ---
 # Easy UI DataGrid 首次进入页面时，不加载任何数据
 首次不加载数据问题，必须搞明白如何才能不加载数据。根据Easu UI的官方API： http://www.jeasyui.com/documentation/

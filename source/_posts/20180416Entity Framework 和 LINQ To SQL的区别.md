@@ -7,6 +7,7 @@ tags:
  - C#/.Net
  - Entity Framework
 description: 比较了Entity Framework 和 LINQ To SQL各方面的优劣势
+permalink: /posts/5.html
 ---
 # Entity Framework 和 LINQ To SQL的区别
 
