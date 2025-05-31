@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 'Gary Zhu的博客'
+title: '朱荣博的博客'
 subtitle: ''
 description: ''
 keywords:
-author: Gary Zhu
+author: 朱荣博
 language: zh-CN
 timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://gzblog.dpdns.org
+url: https://zhurongbo.cn
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
