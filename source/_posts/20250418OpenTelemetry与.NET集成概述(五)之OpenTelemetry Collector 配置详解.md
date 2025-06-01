@@ -203,5 +203,5 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
   - 在Data View下拉框中选择你刚刚创建的Data View，就可以显示相应的数据了。
     ![](/images/es5.png)
 
-请注意：因为博主对elasticsearch和kibana都不甚熟悉，所以数据展现的时候不够优化。但是本篇的目的是为了说明，在进入OpenTelemetry Collector之后，可以通过exporter来配置输出数据的后端服务。这样的好处就是当我们想把数据切换到别的平台时候，就不需要更改我们的Application Code。另外在例子中，我把3种都输出到了debug和elasticsearch，希望大家不要被误导，3中数据的输出目标是可以不一致的，种类和数量都可以不一样，互不影响。
+请注意：因为博主对elasticsearch和kibana都不甚熟悉，所以数据展现的时候不够优化。但是本篇的目的是为了说明，在进入OpenTelemetry Collector之后，可以通过exporter来配置输出数据的后端服务。这样的好处就是当我们想把数据切换到别的平台时候，就不需要更改我们的Application Code。另外在例子中，我把3种都输出到了debug和elasticsearch，希望大家不要被误导，3种数据的输出目标是可以不一致的，种类和数量都可以不一样，互不影响。
 
