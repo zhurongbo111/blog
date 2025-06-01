@@ -1,5 +1,5 @@
 ---
-title: OpenTelemetry与.NET集成概述(四)之OpenTelemetry Collector配置详解
+title: OpenTelemetry与.NET集成概述(五)之OpenTelemetry Collector配置详解
 date:  2025-04-18 20:03:28
 categories:
  - 服务端
