@@ -1,5 +1,5 @@
 ---
-title: OpenTelemetry与.NET集成概述(四)之OpenTelemetry Collector详细介绍
+title: OpenTelemetry与.NET集成概述(四)之OpenTelemetry Collector模式详解
 date:  2025-04-17 19:37:33
 categories:
  - 服务端
@@ -8,7 +8,7 @@ tags:
  - OpenTelemetry
  - 链路追踪
  - 性能监控
-description: 详细介绍OpenTelemetry Collector
+description: 详细介绍OpenTelemetry Collector的三种部署模式
 permalink: /posts/13.html
 ---
 
