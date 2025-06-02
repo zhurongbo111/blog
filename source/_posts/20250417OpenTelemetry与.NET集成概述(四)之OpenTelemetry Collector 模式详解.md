@@ -161,7 +161,7 @@ Agent 模式指应用程序通过**OpenTelemetry SDK**（基于 OpenTelemetry �
 2. 运行如下命令，启动一个collector服务：
 
    ```bash
-   docker run --name otel-collector -p 4317:4317 -p 4318:4318 -v C:\Users\xxx\config.yml:/etc/otel-config.yaml otel/opentelemetry-collector:latest --config=/etc/otel-config.yaml
+   docker run --name otel-collector -d -p 4317:4317 -p 4318:4318 -v C:\Users\yourname\config.yaml:/etc/otel-config.yaml otel/opentelemetry-collector-contrib:latest --config=/etc/otel-config.yaml
    ```
 
 在我们之前的项目安装一个新的Nuget Package：

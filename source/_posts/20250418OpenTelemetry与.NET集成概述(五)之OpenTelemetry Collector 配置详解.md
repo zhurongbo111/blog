@@ -8,6 +8,8 @@ tags:
  - OpenTelemetry
  - 链路追踪
  - 性能监控
+ - Elastic Search
+ - Kibana
 description: 详细介绍OpenTelemetry Collector配置文件
 permalink: /posts/14.html
 ---
@@ -48,14 +50,20 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
 
     ```yaml
     exporters:
-      otlp/jaeger:
-        endpoint: jaeger-server:4317  # 导出至Jaeger后端
       zipkin/nontls:
-        endpoint: "http://some.url:9411/api/v2/spans"
+        endpoint: http://your-local-ip:9411/api/v2/spans # 导出至Zipkin后端
+      elasticsearch:
+        endpoint: http://your-local-ip:9200 # 导出至ElasticSearch后端
+      otlphttp/jaeger:
+        endpoint: http://your-local-ip:4328 # 导出至Jaeger后端
+      otlphttp/prometheus:
+        endpoint: http://your-local-ip/api/v1/otlp # 导出至prometheus后端
+        tls:
+          insecure: true
     ```
-
+  
   - Connectors（连接器）（不常用）：连接两个管道，兼具导出器和接收器功能（如将追踪数据转换为指标）。
-
+  
     ```yaml
     connectors:
       count:  # 统计符合条件的跨度事件并转为指标
@@ -87,121 +95,252 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
       traces:
         receivers: [otlp]         # 使用OTLP接收器
         processors: [batch]       # 批量处理
-        exporters: [otlp/jaeger]  # 导出至Jaeger
+        exporters: [otlphttp/jaeger, zipkin/nontls]  # 导出至Jaeger和Zipkin
       metrics:
-        receivers: [prometheus]   # 使用Prometheus接收器
-        exporters: [prometheusremotewrite]  # 远程写入Prometheus
+        receivers: [otlp]   		# 使用OTLP接收器
+        processors: [batch]       # 批量处理
+        exporters: [otlphttp/prometheus]  # 导出至prometheus
+      logs:
+        receivers: [otlp]			# 使用OTLP接收器
+        processors: [batch]		# 使用OTLP接收器
+        exporters: [elasticsearch]	# 导出至ElasticSearch
     telemetry:
       logs:                       # 配置Collector自身日志
         level: debug
       metrics:                    # 配置Collector自身指标
         level: basic
   ```
-
+  
   这个配置非常重要，这里组装配置的地方来拼接：receiver,processor,exporter三个部分。
 
 ### **组件命名与复用**
 
-- 同一类型组件可通过`type/name`格式创建多个实例（如`otlp/2`、`batch/test`），并在不同管道中复用。
+- 同一类型组件可通过`type/name`格式创建多个实例（如`otlphttp/prometheus`、`otlphttp/jaeger`），并在不同管道中复用。
   - 组件的类型有`type`来确定，名称规则：`type[/name]`
 - 管道支持多接收器、多处理器和多导出器组合，处理器顺序决定数据处理流程。
 
 ### 示例
 
-- 继续我们之前的QuickStart项目，在之前的文章中我们已经启动了一个OpenTelemetry Collector容器，现在我们去修改这个容器的配置文件，改成如下配置：
+接下来我们使用一个实际的配置来进行演示：
 
-  ```yaml
-  receivers:
-    otlp:
-      protocols:
-        grpc:
-          endpoint: 0.0.0.0:4317
-        http:
-          endpoint: 0.0.0.0:4318
-  
-  processors:
-    batch:
-  
-  exporters:
-    debug:
-      verbosity: detailed
-    elasticsearch:
-      endpoint: http://<your-local-address>:9200
-  
-  service:
-    pipelines:
-      traces:
-        receivers: [otlp]
-        processors: [batch]
-        exporters: [debug,elasticsearch]
-      metrics:
-        receivers: [otlp]
-        processors: [batch]
-        exporters: [debug,elasticsearch]
-      logs:
-        receivers: [otlp]
-        processors: [batch]
-        exporters: [debug,elasticsearch]
-  ```
+- 安装必要的组件
 
-- 创建一个docker-compose.yml文件，内容如下：
+  - 使用docker安装Zipkin
 
-  ```yaml
-  version: '3.8'
-  
-  services:
-    elasticsearch:
-      image: docker.elastic.co/elasticsearch/elasticsearch:8.18.2
-      container_name: elasticsearch
-      environment:
-        - xpack.security.enabled=false
-        - discovery.type=single-node
-        - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ```bash
+    docker run --name zipkin -d -p 9411:9411  openzipkin/zipkin
+    ```
+
+  - 使用docker安装Jaeger
+
+    ```bash
+    docker run  --name jaeger -d -p 16686:16686 -p 4328:4318 jaegertracing/jaeger:2.6.0
+    ```
+
+    注意这里我把默认端口**4318**映射成了**4328**，为了和OpenTelemetry Collector端口避免冲突
+
+    
+
+  - 使用docker安装OpenTelemetry Collector，如果看过之前的系列文章已经安装的话，可以忽略
+
+    ```bash
+    docker run --name otel-collector -d -p 4317:4317 -p 4318:4318 -v C:\Users\yourname\config.yaml:/etc/otel-config.yaml otel/opentelemetry-collector-contrib:latest --config=/etc/otel-config.yaml
+    ```
+
+    对应的config.yaml文件的内容如下：
+
+    ```yaml
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    
+    processors:
+      batch:
+    
+    exporters:
+      debug:
+        verbosity: detailed
+      zipkin/nontls:
+        endpoint: http://your-local-ip:9411/api/v2/spans
+      elasticsearch:
+        endpoint: http://your-local-ip:9200
+      otlphttp/jaeger:
+        endpoint: http://your-local-ip:4328
+      otlphttp/prometheus:
+        endpoint: http://your-local-ip:9090/api/v1/otlp
+        tls:
+          insecure: true
+    
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlphttp/jaeger, zipkin/nontls]
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlphttp/prometheus]
+        logs:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [elasticsearch]
+      telemetry:
+        logs:
+          level: debug
+        metrics:
+          level: basic
+    ```
+
+  - 使用docker-compose安装ElasticSearch和Kibana
+
+    - 创建docker-compose.yml文件，内容如下并运行：`docker-compose up -d`：
+
+      ```yml
+      version: '3.8'
+      
+      services:
+        elasticsearch:
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.18.2
+          container_name: elasticsearch
+          environment:
+            - xpack.security.enabled=false
+            - discovery.type=single-node
+            - ES_JAVA_OPTS=-Xms512m -Xmx512m
+          volumes:
+            - elasticsearch-data:/usr/share/elasticsearch/data
+          ports:
+            - "9200:9200"
+          networks:
+            - elastic
+      
+        kibana:
+          image: docker.elastic.co/kibana/kibana:8.18.2
+          container_name: kibana
+          environment:
+            - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+          ports:
+            - "5601:5601"
+          depends_on:
+            - elasticsearch
+          networks:
+            - elastic
+      
       volumes:
-        - elasticsearch-data:/usr/share/elasticsearch/data
-      ports:
-        - "9200:9200"
+        elasticsearch-data:
+      
       networks:
-        - elastic
-  
-    kibana:
-      image: docker.elastic.co/kibana/kibana:8.18.2
-      container_name: kibana
-      environment:
-        - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      ports:
-        - "5601:5601"
-      depends_on:
-        - elasticsearch
-      networks:
-        - elastic
-  
-  volumes:
-    elasticsearch-data:
-  
-  networks:
-    elastic:
-      driver: bridge
-  ```
+        elastic:
+          driver: bridge
+      ```
 
-- 再次启动QuickStart项目
+  - 使用docker安装prometheus
 
-- 访问http://localhost:5601/
+    ```bash
+    docker run --name prometheus -d -p 9090:9090 prom/prometheus --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver
+    ```
 
-  - 在首页选择**Elastic Search**
-    ![](/images/es1.png)
-  - 打开后在右侧点击**Manage**按钮
-    ![](/images/es.png)
-  - 在左侧的侧边栏找找到**Kibana -> Data Views**
-  - 点击右上角的**Create data view**按钮
-  - 就可以看到对应数据的Index，输入合适参数后创建
-    - 这里建议分别创建trace, log, metric这3个与之对应index的data view
-    ![](/images/es3.png)
-  - 首页选择Analytics，再选择Discover
-    ![](/images/es4.png)
-    ![](/images/es6.png)
-  - 在Data View下拉框中选择你刚刚创建的Data View，就可以显示相应的数据了。
-    ![](/images/es5.png)
+    这里指定了参数`--web.enable-otlp-receiver`，这样prometheus才能接收otlp格式的数据
 
-请注意：因为博主对elasticsearch和kibana都不甚熟悉，所以数据展现的时候不够优化。但是本篇的目的是为了说明，在进入OpenTelemetry Collector之后，可以通过exporter来配置输出数据的后端服务。这样的好处就是当我们想把数据切换到别的平台时候，就不需要更改我们的Application Code。另外在例子中，我把3种都输出到了debug和elasticsearch，希望大家不要被误导，3种数据的输出目标是可以不一致的，种类和数量都可以不一样，互不影响。
+  - 使用docker安装grafana
 
+    ```bash
+    docker run -d --name=grafana -p 3000:3000 grafana/grafana
+    ```
+
+    记得在grafana启动后配置prometheus的数据源
+
+- 创建项目并安装必要依赖
+
+  - 在Visual Studio中创建一个Asp.Net Core Web API项目，也可以使用我们之前系列文章中的QuickStart项目
+
+  - 安装如下Nuget package
+
+    - OpenTelemetry.Extensions.Hosting
+    - OpenTelemetry.Instrumentation.AspNetCore
+    - OpenTelemetry.Exporter.OpenTelemetryProtocol
+
+  - 修改项目启动代码，往容器中注入必要的服务，类似这样：
+
+    ```c#
+            // Add OpenTelemetry services here
+            services.AddOpenTelemetry()
+                .ConfigureResource(resourceBuilder => resourceBuilder.AddService("QuickStart")) 
+                .WithTracing(builder => builder.AddAspNetCoreInstrumentation().AddOtlpExporter())
+                .WithMetrics(builder => builder.AddAspNetCoreInstrumentation().AddOtlpExporter())
+                .WithLogging(builder => builder.AddOtlpExporter());
+    ```
+
+- 启动QuickStart项目，等待1分钟左右，依次打开遥测数据后端，就可以看到数据了。
+
+### 查看遥测数据
+
+#### 查看链路追踪数据
+
+因为在配置中，我们把数据同时导出到了Jaeger和Zipkin，所以我们可以同时在这2个工具中查看到数据
+
+- 在Jaeger中查看链路追踪（Traces）数据
+
+  访问http://localhost:16686/ 就可以看到数据了
+
+  ![](/images/jaeger1.png)
+
+- 在Zipkin中查看链路追踪数据
+
+  访问http://localhost:9411/
+
+  ![](/images/zipkin1.png)
+
+#### 查看指标数据（Metric）数据
+
+- 访问[http://localhost:9090/](http://localhost:9090/)， 确保prometheus已经正常运行。
+
+- 访问grafana，地址：[http://localhost:3000/](http://localhost:3000/)，默认用户名/密码：admin/admin
+
+  - 在左边侧边栏依次访问：Connections->Data Sources，然后点击Add new data source
+
+  - 选择Prometheus，在`Prometheus server UR`L中填入：[http://your-ip:9090](http://your-ip:9090) 不能是localhost:9090，因为2个docker容器不在一个网络中，不过可以使用本机的局域网地址
+
+  - 最后点击Save & Test
+
+  - 然后点击左边侧边栏的Explore，选择对应的选项，就可以看到数据了，如下图所示：
+
+    ![](/images/grafana1.png)
+
+#### 查看日志数据
+
+- 访问kibana，地址：[http://localhost:5601/](http://localhost:5601/)，在首页选择访问Analytics
+
+  ![](/images/es1.png)
+
+- 在打开的页面中选择**Create a data view**
+
+  ![](/images/es2.png)
+
+- 在弹窗依次输入如下信息，点击Save data view to Kibana
+
+  ![](/images/es3.png)
+
+- 然后点击Discovery，输入相应的信息，就可以看到日志了
+
+  ![](/images/es4.png)
+
+请注意：本篇文章只是介绍了如何把遥测数据导入到不同的后端服务，并没有使用一些进阶用法。在实际的使用场景，还需要更多的配置来帮助更好的分析数据。
+
+### 参考文章：
+
+[Getting Started with Prometheus and Grafana](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/metrics/getting-started-prometheus-grafana/README.md)
+
+[Using Prometheus as your OpenTelemetry backend | Prometheus](https://prometheus.io/docs/guides/opentelemetry/#enable-the-otlp-receiver)
+
+[Configuration — Jaeger documentation](https://www.jaegertracing.io/docs/2.6/configuration/)
+
+[OpenTelemetry OTLP/HTTP Exporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlphttpexporter)
+
+[OpenTelemetry Zipkin Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/zipkinexporter)
+
+[OpenTelemetry Elasticsearch Exporter](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/elasticsearchexporter)
