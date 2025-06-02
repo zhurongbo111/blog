@@ -8,8 +8,12 @@ tags:
  - OpenTelemetry
  - 链路追踪
  - 性能监控
- - Elastic Search
+ - ElasticSearch
  - Kibana
+ - Jaeger
+ - Zipkin
+ - prometheus
+ - grafana
 description: 详细介绍OpenTelemetry Collector配置文件
 permalink: /posts/14.html
 ---
