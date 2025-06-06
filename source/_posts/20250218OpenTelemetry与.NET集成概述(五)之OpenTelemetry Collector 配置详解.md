@@ -1,6 +1,6 @@
 ---
 title: OpenTelemetry与.NET集成概述(五)之OpenTelemetry Collector配置详解
-date:  2025-04-18 20:03:28
+date:  2025-02-18 20:03:28
 categories:
  - 服务端
 tags:
@@ -164,6 +164,11 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
     
     processors:
       batch:
+      transform:
+        metric_statements:
+            - replace_pattern(metric.name, "\\.", "_")
+            - replace_all_patterns(resource.attributes, "key", "\\.", "_")
+            - replace_all_patterns(datapoint.attributes, "key", "\\.", "_")
     
     exporters:
       debug:
@@ -253,7 +258,7 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
   - 使用docker安装grafana
 
     ```bash
-    docker run -d --name=grafana -p 3000:3000 grafana/grafana
+    docker run -d --name grafana -p 3000:3000 grafana/grafana
     ```
 
     记得在grafana启动后配置prometheus的数据源

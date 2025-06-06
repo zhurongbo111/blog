@@ -1,6 +1,6 @@
 ---
 title: OpenTelemetry与.NET集成概述(三)之OpenTelemetry的在.Net中的常用组件
-date:  2025-04-13 20:23:18
+date:  2024-12-13 20:23:18
 categories:
  - 服务端
 tags:

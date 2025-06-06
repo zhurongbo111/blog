@@ -1,6 +1,6 @@
 ---
 title: OpenTelemetry与.NET集成概述(四)之OpenTelemetry Collector模式详解
-date:  2025-04-17 19:37:33
+date:  2024-12-17 19:37:33
 categories:
  - 服务端
 tags:

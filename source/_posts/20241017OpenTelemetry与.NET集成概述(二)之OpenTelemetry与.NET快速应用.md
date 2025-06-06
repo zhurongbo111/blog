@@ -1,6 +1,6 @@
 ---
 title: OpenTelemetry与.NET集成概述(二)之OpenTelemetry与.NET快速应用
-date:  2025-04-08 20:38:55
+date:  2024-10-17 20:38:55
 categories:
  - 服务端
 tags:
