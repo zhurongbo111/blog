@@ -14,7 +14,7 @@ permalink: /posts/2.html
 
 仔细观察DataGrid的事件当中有一个这样的描述：
 
-![](/images/easyui.png)
+![Easy UI table的官方说明](/images/easyui.png)
 
 根据这个我们给onBeforeLoad事件绑定如下的事件:
 

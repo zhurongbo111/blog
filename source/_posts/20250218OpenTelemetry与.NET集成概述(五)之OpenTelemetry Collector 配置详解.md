@@ -18,8 +18,8 @@ description: 详细介绍OpenTelemetry Collector配置文件
 permalink: /posts/14.html
 ---
 
-# OpenTelemetry Collector的配置文件详细介绍
-   ![](/images/otel0.png)
+## OpenTelemetry Collector的配置文件详细介绍
+   ![OpenTelemetry中Collector的架构图](/images/otel0.png)
 ### **配置文件核心结构**
 
 Collector 配置由**管道组件**和**扩展组件**组成，通过`service`部分启用组件并定义数据流向。
@@ -296,13 +296,13 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
 
   访问http://localhost:16686/ 就可以看到数据了
 
-  ![](/images/jaeger1.png)
+  ![Trace在Jaeger中的显示](/images/jaeger1.png)
 
 - 在Zipkin中查看链路追踪数据
 
   访问http://localhost:9411/
 
-  ![](/images/zipkin1.png)
+  ![Trace在Zipkin中的显示](/images/zipkin1.png)
 
 #### 查看指标数据（Metric）数据
 
@@ -318,25 +318,25 @@ Collector 配置由**管道组件**和**扩展组件**组成，通过`service`�
 
   - 然后点击左边侧边栏的Explore，选择对应的选项，就可以看到数据了，如下图所示：
 
-    ![](/images/grafana1.png)
+    ![指标在grafana中的输出](/images/grafana1.png)
 
 #### 查看日志数据
 
 - 访问kibana，地址：[http://localhost:5601/](http://localhost:5601/)，在首页选择访问Analytics
 
-  ![](/images/es1.png)
+  ![kibana设置一](/images/es1.png)
 
 - 在打开的页面中选择**Create a data view**
 
-  ![](/images/es2.png)
+  ![kibana设置二](/images/es2.png)
 
 - 在弹窗依次输入如下信息，点击Save data view to Kibana
 
-  ![](/images/es3.png)
+  ![kibana设置三](/images/es3.png)
 
 - 然后点击Discovery，输入相应的信息，就可以看到日志了
 
-  ![](/images/es4.png)
+  ![日志在Kibana中的显示](/images/es4.png)
 
 请注意：本篇文章只是介绍了如何把遥测数据导入到不同的后端服务，并没有使用一些进阶用法。在实际的使用场景，还需要更多的配置来帮助更好的分析数据。
 

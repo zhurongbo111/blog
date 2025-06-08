@@ -58,5 +58,3 @@ layout: about
 ![Working Class](https://img.shields.io/badge/-Working%20Class-blue)
 ![Open Source](https://img.shields.io/badge/-Open%20Source-brightgreen)
 ---
-
-![](https://komarev.com/ghpvc/?username=zhurongbo111&color=0d6efd)

@@ -44,11 +44,11 @@ OpenTelemetry.Exporter.Console
 启动项目。你就会看到在控制台中有类似以下的输出，俺就说明成功了。
 
 日志输出：
-![](/images/otel1.png)
+![OpenTelemetry日志输出](/images/otel1.png)
 
 链路追踪（Traces）输出：
-![](/images/otel3.png)
+![OpenTelemetry链路追踪输出](/images/otel3.png)
 指标（Metrics）输出：
-![](/images/otel2.png)
+![OpenTelemetry指标输出](/images/otel2.png)
 
 当然在实际的项目当中我们并不会把信息输出到控制台，而是相应的后端服务。这里只是为了快速演示OpenTelemetry与.Net如何集成的罢了，后续的文章中我们会介绍如何把这些信息输出到相应的服务中去，会相当的简单。

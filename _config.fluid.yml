@@ -485,7 +485,7 @@ index:
   # 头图高度，屏幕百分比
   # Height ratio of banner image
   # Available: 0 - 100
-  banner_img_height: 100
+  banner_img_height: 50
 
   # 头图黑色蒙版的不透明度，available: 0 - 1.0，1 是完全不透明
   # Opacity of the banner mask, 1.0 is completely opaque
@@ -553,7 +553,7 @@ index:
 #---------------------------
 post:
   banner_img: /images/banner.png
-  banner_img_height: 70
+  banner_img_height: 50
   banner_mask_alpha: 0.3
 
   # 文章在首页的默认封面图，当没有指定 index_img 时会使用该图片，若两者都为空则不显示任何图片
@@ -918,7 +918,7 @@ discuss:
 #---------------------------
 archive:
   banner_img: /images/banner.png
-  banner_img_height: 60
+  banner_img_height: 50
   banner_mask_alpha: 0.3
 
 
@@ -929,7 +929,7 @@ archive:
 category:
   enable: true
   banner_img: /images/banner.png
-  banner_img_height: 60
+  banner_img_height: 50
   banner_mask_alpha: 0.3
 
   # 分类的排序字段，前面带减号是倒序，不带减号是正序
@@ -958,7 +958,7 @@ category:
 tag:
   enable: true
   banner_img: /images/banner.png
-  banner_img_height: 80
+  banner_img_height: 50
   banner_mask_alpha: 0.3
   tagcloud:
     min_font: 15
@@ -975,7 +975,7 @@ tag:
 about:
   enable: true
   banner_img: /images/banner.png
-  banner_img_height: 60
+  banner_img_height: 50
   banner_mask_alpha: 0.3
   avatar: /images/avatar.jpg
   name: "朱荣博"
@@ -997,7 +997,7 @@ about:
 #---------------------------
 page:
   banner_img: /images/banner.png
-  banner_img_height: 60
+  banner_img_height: 50
   banner_mask_alpha: 0.3
 
 
@@ -1008,7 +1008,7 @@ page:
 page404:
   enable: true
   banner_img: /images/banner.png
-  banner_img_height: 85
+  banner_img_height: 50
   banner_mask_alpha: 0.3
   # 重定向到首页的延迟(毫秒)
   # Delay in redirecting to home page (milliseconds)
@@ -1022,7 +1022,7 @@ page404:
 links:
   enable: true
   banner_img: /images/banner.png
-  banner_img_height: 60
+  banner_img_height: 50
   banner_mask_alpha: 0.3
   # 友链的成员项
   # Member item of page

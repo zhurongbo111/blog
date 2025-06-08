@@ -12,14 +12,14 @@ description: 详细介绍OpenTelemetry Collector的三种部署模式
 permalink: /posts/13.html
 ---
 
-# OpenTelemetry Collector的三种模式
+## OpenTelemetry Collector的三种模式
 
 在OpenTelemetry 3种收集可观测数据的方式，分别是No Collector，Agent和Gateway，接下来我们会着重介绍前2种方式
 
 ## No Collector 模式
 
 这种模式是指应用程序通过集成 OpenTelemetry SDK，将遥测信号（追踪数据、指标、日志）直接导出到后端，无需经过 Collector 组件，是最简单的部署模式。
-![](/images/otel5.png)
+![No Collector模式](/images/otel5.png)
 
 ### 优缺点
 
@@ -77,7 +77,7 @@ OpenTelemetry.Exporter.Zipkin
 ```
 
 跟之前的代码比较，我们只是在WithTracing的配置方法中添加了一个`.AddZipkinExporter()`，改动非常小。这样的改动会把对应的链路追踪数据（Traces）发送到Zipkin中，可能你也已经注意到了Trace里，我们并没有删除.AddConsoleExporter()，这也就意味着Traces数据会同时发送到两个地方：控制台和Zipkin服务端。另外我们只修改了Trace，并没有修改Metrics和Logging，这也说明了这3部分数据是互不影响的，各自有各自的配置。让我们运行这个项目，稍等一会，我们就会发现Zipkin就有数据了。
-![](/images/otel4.png)
+![Trace在Zikpin中的显示](/images/otel4.png)
 
 ## Agent 模式
 
@@ -92,7 +92,7 @@ Agent 模式指应用程序通过**OpenTelemetry SDK**（基于 OpenTelemetry �
 - **应用端**：SDK 配置为将 OTLP 数据发送至 Collector 地址（如环境变量指定端点）。
 - **Collector 端**：接收数据后，通过配置的处理器（如批量处理）和导出器（如 Jaeger、Prometheus Remote Write）转发至一个或多个后端。
 
-![](/images/otel7.png)
+![Agent模式](/images/otel7.png)
 
 ### 优缺点
 
@@ -191,11 +191,11 @@ OpenTelemetry.Exporter.OpenTelemetryProtocol
 这次的改动我们把之前的ConsoleExporter和Trace中的ZipkinExporter都移除，全部替换成：`.AddOtlpExporter()`。这样的改动会使得应用程序中产生的3类数据全部发送到OpenTelemetry Collector，然后再由OpenTelemtry Collector根据配置转发到各个观测服务后端。为了方便演示，目前我们把所有发送的OpenTelemetry Collector的数据转发到控制台输出，在之后的文章中，我们会更改这个配置，让数据转发的真正的观测服务后端。现在我们再次运行项目，我们会在这个container的输出中看到如下的信息：
 
 日志信息：
-![](/images/otel8.png)
+![日志在Collector中的debug输出](/images/otel8.png)
 链路追踪信息：
-![](/images/otel10.png)
+![Trace在Collector中的debug输出](/images/otel10.png)
 指标信息：
-![](/images/otel9.png)
+![指标数据在Collector中的debug输出](/images/otel9.png)
 
 ## Gateway 模式
 
@@ -209,7 +209,7 @@ OpenTelemetry.Exporter.OpenTelemetryProtocol
 ```
 应用/下游Collector → OTLP协议 → 负载均衡器 → 网关Collector集群 → 处理后转发至后端
 ```
-![](/images/otel6.png)
+![Gateway模式](/images/otel6.png)
 
 ### **核心组件与配置示例**
 
