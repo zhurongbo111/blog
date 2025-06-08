@@ -2,6 +2,7 @@
 title: about
 date: 2025-05-26 21:36:51
 layout: about
+comment: 'giscus'
 ---
 
 # 👋 关于我

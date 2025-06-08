@@ -1,5 +1,5 @@
 User-Agent: *
-Disallow: /tag/
-Disallow: /category/
+Disallow: /tags/
+Disallow: /categories/
 Disallow: /archives/
 Sitemap: https://zhurongbo.cn/sitemap.xml
